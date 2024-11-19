@@ -1,3 +1,6 @@
+# Save this code in a file, for example: titanic_app.py
+# Run it using: streamlit run titanic_app.py
+
 import streamlit as st
 import numpy as np
 import pickle
@@ -29,3 +32,4 @@ if st.button("Predict"):
         st.write("Prediction: Died")
     else:
         st.write("Prediction: Survived")
+
