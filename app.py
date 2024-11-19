@@ -2,39 +2,30 @@ import streamlit as st
 import numpy as np
 import pickle
 
-# Load the trained model (make sure to save your trained model as 'logistic_model.pkl')
-# This requires a saved pickle file containing your trained LogisticRegression model
-# Uncomment the below two lines if you have the model saved
-with open('titanic.pkl', 'rb') as file:
+# Load the trained model (ensure the model file is in the same directory or provide a path)
+with open('titanic_pred.pkl', 'rb') as file:
     model = pickle.load(file)
 
-st.title('Diabetes Prediction App')
+st.title("Titanic Survival Prediction")
 
-st.write("Enter the following details to predict diabetes:")
+# User input fields for the features
+pclass = st.selectbox("Passenger Class (Pclass)", options=[1, 2, 3], format_func=lambda x: f"Class {x}")
+sex = st.selectbox("Gender (0 = Male, 1 = Female)", options=[0, 1], format_func=lambda x: "Male" if x == 0 else "Female")
+age = st.number_input("Age", min_value=0, max_value=100, value=22)
+sibsp = st.number_input("Number of Siblings/Spouses aboard (SibSp)", min_value=0, max_value=10, value=1)
+parch = st.number_input("Number of Parents/Children aboard (Parch)", min_value=0, max_value=10, value=0)
+fare = st.number_input("Passenger Fare", min_value=0.0, value=7.25)
+embarked = st.selectbox("Port of Embarkation (0 = S, 1 = C, 2 = Q)", options=[0, 1, 2], format_func=lambda x: "S" if x == 0 else "C" if x == 1 else "Q")
 
-# Collecting input data from the user
-pregnancies = st.number_input('Pregnancies', min_value=0, max_value=20, value=0, step=1)
-glucose = st.number_input('Glucose Level', min_value=0, max_value=200, value=0)
-blood_pressure = st.number_input('Blood Pressure Level', min_value=0, max_value=150, value=0)
-skin_thickness = st.number_input('Skin Thickness', min_value=0, max_value=100, value=0)
-insulin = st.number_input('Insulin Level', min_value=0, max_value=800, value=0)
-bmi = st.number_input('BMI', min_value=0.0, max_value=70.0, value=0.0)
-diabetes_pedigree_function = st.number_input('Diabetes Pedigree Function', min_value=0.0, max_value=3.0, value=0.0)
-age = st.number_input('Age', min_value=0, max_value=120, value=0, step=1)
+# Input data conversion to numpy array and reshaping
+input_data = (pclass, sex, age, sibsp, parch, fare, embarked)
+input_data_as_numpy_array = np.asarray(input_data)
+input_data_reshape = input_data_as_numpy_array.reshape(1, -1)
 
-# Making predictions based on input data
-if st.button('Predict'):
-    input_data = (pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, diabetes_pedigree_function, age)
-    input_data_as_numpy_array = np.asarray(input_data)
-    input_data_reshape = input_data_as_numpy_array.reshape(1, -1)
-    
-    # Uncomment when you have the trained model loaded
-    # prediction = model.predict(input_data_reshape)
-    
-    # Placeholder for actual prediction result
-    prediction = [0]  # Replace with the model prediction
-    
+# Make prediction
+if st.button("Predict"):
+    prediction = model.predict(input_data_reshape)
     if prediction[0] == 0:
-        st.write("The person is not diabetic.")
+        st.write("Prediction: Died")
     else:
-        st.write("The person is diabetic.")
+        st.write("Prediction: Survived")
